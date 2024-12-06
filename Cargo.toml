@@ -1,0 +1,13 @@
+[package]
+name = "gunnhildr"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = {version="4.9.0"}
+env_logger = "0.11.5"
+figment = {version="0.10.19", features=["env"]}
+log = "0.4.22"
+serde = {version="1.0.215", features=["derive"]}
+sqlx = "0.8.2"
+tokio = "1.42.0"
