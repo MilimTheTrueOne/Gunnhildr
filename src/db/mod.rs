@@ -1,10 +1,11 @@
+#![allow(unused)]
 use log::{info, warn};
-use sqlx::{migrate::MigrateDatabase, Sqlite, SqlitePool};
+use sqlx::{migrate::MigrateDatabase, PgPool, Postgres, Sqlite, SqlitePool};
 
 #[derive(Clone)]
 pub enum DataBase {
     Sqlite(sqlx::Pool<Sqlite>),
-    //Postgres(sqlx::Pool<Postgres>),
+    Postgres(sqlx::Pool<Postgres>),
 }
 
 impl DataBase {
@@ -27,5 +28,26 @@ impl DataBase {
             .expect("Failed to apply migration!");
 
         Self::Sqlite(pool)
+    }
+
+    pub async fn postgres(url: &str) -> Self {
+        if !sqlx::Postgres::database_exists(url)
+            .await
+            .expect("failed to connect to db")
+        {
+            warn!("No Postgres database found, if this is the first time you are starting Gunnhildr, you can safely ignore this.");
+            sqlx::Postgres::create_database(url)
+                .await
+                .expect("failed to create Postgres Database!");
+            info!("Created new Postgres Database");
+        }
+
+        let pool = PgPool::connect("url").await.unwrap();
+        sqlx::migrate!("migrations/postgres")
+            .run(&pool)
+            .await
+            .expect("Failed to apply migration!");
+
+        Self::Postgres(pool)
     }
 }
