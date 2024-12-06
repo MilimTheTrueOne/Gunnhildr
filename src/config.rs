@@ -5,7 +5,7 @@ use figment::{
 use serde::{Deserialize, Serialize};
 use std::net::{IpAddr, Ipv4Addr};
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone, Copy)]
 pub struct Config {
     pub binding_ip: IpAddr,
     pub port: u16,
