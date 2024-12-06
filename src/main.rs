@@ -1,13 +1,17 @@
 use actix_web::{get, App, HttpServer};
 use log::info;
 
+mod config;
+
 #[actix_web::main]
 async fn main() -> Result<(), std::io::Error> {
     env_logger::init();
 
+    let config = config::parse_config();
+
     info!("Server starting...");
     HttpServer::new(|| App::new().service(hello))
-        .bind(("127.0.0.1", 6767))?
+        .bind((config.binding_ip, config.port))?
         .run()
         .await
 }
