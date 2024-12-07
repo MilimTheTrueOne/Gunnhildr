@@ -2,6 +2,10 @@
 use log::{info, warn};
 use sqlx::{migrate::MigrateDatabase, PgPool, Postgres, Sqlite, SqlitePool};
 
+pub mod models;
+mod postgres;
+mod sqlite;
+
 /// Utility for interacting with the database
 #[derive(Clone)]
 pub enum DataBase {
@@ -61,5 +65,12 @@ impl DataBase {
             .expect("Failed to apply migration!");
 
         Self::Postgres(pool)
+    }
+
+    pub fn get_chapter(&self, id: u32) -> models::Chapter {
+        match self {
+            DataBase::Sqlite(pool) => sqlite::sqlite_chapter(pool, id),
+            DataBase::Postgres(pool) => todo!(),
+        }
     }
 }
