@@ -7,7 +7,9 @@ mod db;
 
 #[actix_web::main]
 async fn main() -> Result<(), std::io::Error> {
-    env_logger::init();
+    env_logger::builder()
+        .filter_level(log::LevelFilter::Info)
+        .init();
 
     let config = config::parse_config();
     let db = db::DataBase::sqlite().await;
