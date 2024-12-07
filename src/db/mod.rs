@@ -2,14 +2,19 @@
 use log::{info, warn};
 use sqlx::{migrate::MigrateDatabase, PgPool, Postgres, Sqlite, SqlitePool};
 
+/// Utility for interacting with the database
 #[derive(Clone)]
 pub enum DataBase {
+    /// Used for Sqlite database
     Sqlite(sqlx::Pool<Sqlite>),
+    /// Used for Postgres database
     Postgres(sqlx::Pool<Postgres>),
 }
 
 impl DataBase {
+    /// Database backed by SQLite
     pub async fn sqlite() -> Self {
+        // Check if db exists, if not create it.
         if !sqlx::Sqlite::database_exists("sqlite:gunnhildr.db")
             .await
             .expect("failed to connect to db")
@@ -23,6 +28,7 @@ impl DataBase {
 
         let pool = SqlitePool::connect("sqlite:gunnhildr.db").await.unwrap();
 
+        // run migrations
         sqlx::migrate!("migrations/sqlite")
             .run(&pool)
             .await
@@ -32,7 +38,9 @@ impl DataBase {
         Self::Sqlite(pool)
     }
 
+    /// Database backed by Postgres
     pub async fn postgres(url: &str) -> Self {
+        // check if database exists and create one if not
         if !sqlx::Postgres::database_exists(url)
             .await
             .expect("failed to connect to db")
@@ -45,6 +53,8 @@ impl DataBase {
         }
 
         let pool = PgPool::connect("url").await.unwrap();
+
+        // run migrations
         sqlx::migrate!("migrations/postgres")
             .run(&pool)
             .await

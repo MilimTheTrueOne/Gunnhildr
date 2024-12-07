@@ -7,7 +7,9 @@ use std::net::{IpAddr, Ipv4Addr};
 
 #[derive(Deserialize, Serialize, Clone, Copy)]
 pub struct Config {
+    /// Ip address that the gunnhildr should bind to
     pub binding_ip: IpAddr,
+    /// Port that gunnhildr should listen on
     pub port: u16,
 }
 
@@ -20,6 +22,7 @@ impl Default for Config {
     }
 }
 
+/// Parse and merge all config sources
 pub fn parse_config() -> Config {
     Figment::from(Serialized::defaults(Config::default()))
         .merge(Env::prefixed("HILDR"))

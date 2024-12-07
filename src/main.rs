@@ -7,6 +7,7 @@ mod db;
 
 #[actix_web::main]
 async fn main() -> Result<(), std::io::Error> {
+    // init env logger
     env_logger::builder()
         .filter_level(log::LevelFilter::Info)
         .init();
@@ -19,7 +20,7 @@ async fn main() -> Result<(), std::io::Error> {
         App::new()
             .app_data(config)
             .app_data(db.clone())
-            .service(books::book_scope())
+            .service(books::reading_scope())
             .service(hello)
     })
     .bind((config.binding_ip, config.port))?
