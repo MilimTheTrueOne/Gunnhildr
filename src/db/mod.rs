@@ -22,10 +22,12 @@ impl DataBase {
         }
 
         let pool = SqlitePool::connect("sqlite:gunnhildr.db").await.unwrap();
+
         sqlx::migrate!("migrations/sqlite")
             .run(&pool)
             .await
             .expect("Failed to apply migration!");
+        info!("Applied migrations.");
 
         Self::Sqlite(pool)
     }
