@@ -8,7 +8,7 @@ mod sqlite;
 
 /// Utility for interacting with the database
 #[derive(Clone)]
-pub enum DataBase {
+pub enum DbInterface {
     /// Used for Sqlite database
     Sqlite(sqlx::Pool<Sqlite>),
     /// Used for Postgres database
@@ -33,7 +33,7 @@ impl From<sqlx::Error> for DbError {
 }
 type DbResult<T> = Result<T, DbError>;
 
-impl DataBase {
+impl DbInterface {
     /// Database backed by SQLite
     pub async fn sqlite() -> Self {
         // Check if db exists, if not create it.
@@ -88,63 +88,63 @@ impl DataBase {
     /// Tries to fetch a book from the database
     pub async fn get_book(&self, id: u32) -> DbResult<models::Book> {
         match self {
-            DataBase::Sqlite(pool) => sqlite::sqlite_book(pool, id).await,
-            DataBase::Postgres(pool) => todo!(),
+            DbInterface::Sqlite(pool) => sqlite::sqlite_book(pool, id).await,
+            DbInterface::Postgres(pool) => todo!(),
         }
     }
 
     /// Tries to create a book and returns the book's id if successful
     pub async fn create_book(
         &self,
-        title: String,
-        description: String,
+        title: &String,
+        description: &String,
         author_id: u32,
     ) -> DbResult<u32> {
         match self {
-            DataBase::Sqlite(pool) => {
+            DbInterface::Sqlite(pool) => {
                 sqlite::sqlite_book_create(pool, title, description, author_id).await
             }
-            DataBase::Postgres(pool) => todo!(),
+            DbInterface::Postgres(pool) => todo!(),
         }
     }
 
     /// Tries to fetch a chapter from the database
     pub async fn get_chapter(&self, id: u32) -> DbResult<models::Chapter> {
         match self {
-            DataBase::Sqlite(pool) => sqlite::sqlite_chapter(pool, id).await,
-            DataBase::Postgres(pool) => todo!(),
+            DbInterface::Sqlite(pool) => sqlite::sqlite_chapter(pool, id).await,
+            DbInterface::Postgres(pool) => todo!(),
         }
     }
 
     /// Tries to create a chapter and returns the chapter's id if successfu
     pub async fn create_chapter(
         &self,
-        title: String,
-        text: String,
+        title: &String,
+        text: &String,
         book_id: u32,
         author_id: u32,
     ) -> DbResult<u32> {
         match self {
-            DataBase::Sqlite(pool) => {
+            DbInterface::Sqlite(pool) => {
                 sqlite::sqlite_chapter_create(pool, title, text, book_id, author_id).await
             }
-            DataBase::Postgres(pool) => todo!(),
+            DbInterface::Postgres(pool) => todo!(),
         }
     }
 
     /// Tries to fetch a user from the database
     pub async fn get_user(&self, id: u32) -> DbResult<models::User> {
         match self {
-            DataBase::Sqlite(pool) => sqlite::sqlite_user(pool, id).await,
-            DataBase::Postgres(pool) => todo!(),
+            DbInterface::Sqlite(pool) => sqlite::sqlite_user(pool, id).await,
+            DbInterface::Postgres(pool) => todo!(),
         }
     }
 
     /// Tries to create a user and returns the user's id if successful
-    pub async fn create_user(&self, name: String) -> DbResult<u32> {
+    pub async fn create_user(&self, name: &String) -> DbResult<u32> {
         match self {
-            DataBase::Sqlite(pool) => sqlite::sqlite_user_create(pool, name).await,
-            DataBase::Postgres(pool) => todo!(),
+            DbInterface::Sqlite(pool) => sqlite::sqlite_user_create(pool, name).await,
+            DbInterface::Postgres(pool) => todo!(),
         }
     }
 }

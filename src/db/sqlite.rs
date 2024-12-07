@@ -23,8 +23,8 @@ pub async fn sqlite_book(pool: &Pool<Sqlite>, id: u32) -> DbResult<Book> {
 
 pub async fn sqlite_book_create(
     pool: &Pool<Sqlite>,
-    title: String,
-    description: String,
+    title: &String,
+    description: &String,
     author_id: u32,
 ) -> DbResult<u32> {
     let id = sqlx::query("INSERT INTO books (title, description, author_id, book_creation_date) VALUES ( ?1, ?2, ?3, ?4 )")
@@ -57,8 +57,8 @@ pub async fn sqlite_chapter(pool: &Pool<Sqlite>, id: u32) -> DbResult<Chapter> {
 
 pub async fn sqlite_chapter_create(
     pool: &Pool<Sqlite>,
-    title: String,
-    text: String,
+    title: &String,
+    text: &String,
     book_id: u32,
     author_id: u32,
 ) -> DbResult<u32> {
@@ -89,7 +89,7 @@ pub async fn sqlite_user(pool: &Pool<Sqlite>, id: u32) -> DbResult<User> {
     Ok(user)
 }
 
-pub async fn sqlite_user_create(pool: &Pool<Sqlite>, name: String) -> DbResult<u32> {
+pub async fn sqlite_user_create(pool: &Pool<Sqlite>, name: &String) -> DbResult<u32> {
     let id = sqlx::query("INSERT INTO users (name) VALUES ( ? )")
         .bind(name)
         .execute(pool)
