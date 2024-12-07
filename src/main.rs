@@ -1,6 +1,7 @@
 use actix_web::{get, App, HttpServer};
 use log::info;
 
+mod books;
 mod config;
 mod db;
 
@@ -16,6 +17,7 @@ async fn main() -> Result<(), std::io::Error> {
         App::new()
             .app_data(config)
             .app_data(db.clone())
+            .service(books::book_scope())
             .service(hello)
     })
     .bind((config.binding_ip, config.port))?
