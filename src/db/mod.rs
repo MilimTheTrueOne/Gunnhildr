@@ -15,6 +15,24 @@ pub enum DataBase {
     Postgres(sqlx::Pool<Postgres>),
 }
 
+/// Error type for handling DB related errors
+pub enum DbError {
+    /// No such entry found
+    NotFound,
+    /// Database related error
+    SqlxError(sqlx::Error),
+}
+
+impl From<sqlx::Error> for DbError {
+    fn from(value: sqlx::Error) -> Self {
+        match value {
+            sqlx::Error::RowNotFound => DbError::NotFound,
+            _ => DbError::SqlxError(value),
+        }
+    }
+}
+type DbResult<T> = Result<T, DbError>;
+
 impl DataBase {
     /// Database backed by SQLite
     pub async fn sqlite() -> Self {
@@ -67,9 +85,65 @@ impl DataBase {
         Self::Postgres(pool)
     }
 
-    pub fn get_chapter(&self, id: u32) -> models::Chapter {
+    /// Tries to fetch a book from the database
+    pub async fn get_book(&self, id: u32) -> DbResult<models::Book> {
         match self {
-            DataBase::Sqlite(pool) => sqlite::sqlite_chapter(pool, id),
+            DataBase::Sqlite(pool) => sqlite::sqlite_book(pool, id).await,
+            DataBase::Postgres(pool) => todo!(),
+        }
+    }
+
+    /// Tries to create a book and returns the book's id if successful
+    pub async fn create_book(
+        &self,
+        title: String,
+        description: String,
+        author_id: u32,
+    ) -> DbResult<u32> {
+        match self {
+            DataBase::Sqlite(pool) => {
+                sqlite::sqlite_book_create(pool, title, description, author_id).await
+            }
+            DataBase::Postgres(pool) => todo!(),
+        }
+    }
+
+    /// Tries to fetch a chapter from the database
+    pub async fn get_chapter(&self, id: u32) -> DbResult<models::Chapter> {
+        match self {
+            DataBase::Sqlite(pool) => sqlite::sqlite_chapter(pool, id).await,
+            DataBase::Postgres(pool) => todo!(),
+        }
+    }
+
+    /// Tries to create a chapter and returns the chapter's id if successfu
+    pub async fn create_chapter(
+        &self,
+        title: String,
+        text: String,
+        book_id: u32,
+        author_id: u32,
+    ) -> DbResult<u32> {
+        match self {
+            DataBase::Sqlite(pool) => {
+                sqlite::sqlite_chapter_create(pool, title, text, book_id, author_id).await
+            }
+            DataBase::Postgres(pool) => todo!(),
+        }
+    }
+
+    /// Tries to fetch a user from the database
+    pub async fn get_user(&self, id: u32) -> DbResult<models::User> {
+        match self {
+            DataBase::Sqlite(pool) => sqlite::sqlite_user(pool, id).await,
+            DataBase::Postgres(pool) => todo!(),
+        }
+    }
+
+    /// Tries to create a user and returns the user's id if successful
+    pub async fn create_user(&self, name: String) -> DbResult<u32> {
+        match self {
+            DataBase::Sqlite(pool) => sqlite::sqlite_user_create(pool, name).await,
             DataBase::Postgres(pool) => todo!(),
         }
     }
