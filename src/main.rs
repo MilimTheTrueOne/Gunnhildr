@@ -1,6 +1,7 @@
 use actix_web::{get, web, App, HttpServer};
 use log::info;
 
+mod api;
 mod config;
 mod db;
 mod reading;

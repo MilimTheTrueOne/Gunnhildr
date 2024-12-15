@@ -16,6 +16,7 @@ pub enum DbInterface {
 }
 
 /// Error type for handling DB related errors
+#[derive(Debug)]
 pub enum DbError {
     /// No such entry found
     NotFound,
@@ -116,7 +117,7 @@ impl DbInterface {
         }
     }
 
-    /// Tries to create a chapter and returns the chapter's id if successfu
+    /// Tries to create a chapter and returns the chapter's id if successful
     pub async fn create_chapter(
         &self,
         title: &String,
