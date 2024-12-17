@@ -2,13 +2,21 @@
 name = "gunnhildr"
 version = "0.1.0"
 edition = "2021"
+authors = ["TheMorrigna"]
 
 [dependencies]
-actix-web = {version="4.9.0"}
-chrono = "0.4.38"
+actix-session = "0.10.1"
+actix-web = "4.9.0"
+anyhow = "1.0.94"
+app = { path = "./app" }
+chrono = "0.4.39"
+comrak = "0.32.0"
 env_logger = "0.11.5"
-figment = {version="0.10.19", features=["env"]}
+figment = "0.10.19"
 log = "0.4.22"
-serde = {version="1.0.215", features=["derive"]}
-sqlx = {version="0.8.2", features=["runtime-tokio","postgres", "sqlite"]}
+sea-orm = { version = "1.1.2", features = ["sqlx-postgres", "sqlx-sqlite", "runtime-tokio-native-tls", "macros", "with-chrono"] }
+serde = { version = "1.0.216", features = ["derive"] }
 tokio = "1.42.0"
+
+[workspace]
+members = ["app"]
