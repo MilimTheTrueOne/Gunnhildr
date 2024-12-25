@@ -1,9 +1,14 @@
-use actix_web::{get, App, HttpServer};
-use anyhow::Ok;
+use actix_web::{get, web, App, HttpServer};
+use migration::MigratorTrait;
+use sea_orm::Database;
+
+mod store;
 
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
-    HttpServer::new(|| App::new().service(greet))
+    let conn = Database::connect("sqlite:file:gunnhildr.db").await.unwrap();
+    migration::Migrator::up(&conn, None).await.unwrap();
+    HttpServer::new(move || App::new().service(greet))
         .bind(("127.0.0.1", 5678))?
         .run()
         .await?;
