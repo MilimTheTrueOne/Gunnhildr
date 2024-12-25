@@ -8,24 +8,24 @@ impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let mut book_author = ForeignKey::create()
             .name("FK_book_author")
-            .to(UserIden::Table, UserIden::UserId)
-            .from(BookIden::Table, BookIden::Author)
+            .to(User::Table, User::Id)
+            .from(Book::Table, Book::Author)
             .on_delete(ForeignKeyAction::Cascade)
             .on_update(ForeignKeyAction::Cascade)
             .to_owned();
 
         let mut chapter_author = ForeignKey::create()
             .name("FK_chapter_author")
-            .to(UserIden::Table, UserIden::UserId)
-            .from(ChapterIden::Table, ChapterIden::Author)
+            .to(User::Table, User::Id)
+            .from(Chapter::Table, Chapter::Author)
             .on_delete(ForeignKeyAction::Cascade)
             .on_update(ForeignKeyAction::Cascade)
             .to_owned();
 
         let mut chapter_book = ForeignKey::create()
             .name("FK_chapter_book")
-            .to(BookIden::Table, BookIden::BookId)
-            .from(ChapterIden::Table, ChapterIden::Book)
+            .to(Book::Table, Book::Id)
+            .from(Chapter::Table, Chapter::Book)
             .on_delete(ForeignKeyAction::Cascade)
             .on_update(ForeignKeyAction::Cascade)
             .to_owned();
@@ -33,14 +33,14 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(UserIden::Table)
+                    .table(User::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(UserIden::Email).string())
-                    .col(ColumnDef::new(UserIden::IconUrl).string())
-                    .col(ColumnDef::new(UserIden::Name).string())
-                    .col(ColumnDef::new(UserIden::Pass).string())
+                    .col(ColumnDef::new(User::Email).string().not_null())
+                    .col(ColumnDef::new(User::IconUrl).string())
+                    .col(ColumnDef::new(User::Name).string().not_null())
+                    .col(ColumnDef::new(User::Pass).string().not_null())
                     .col(
-                        ColumnDef::new(UserIden::UserId)
+                        ColumnDef::new(User::Id)
                             .integer()
                             .not_null()
                             .auto_increment()
@@ -53,21 +53,21 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(BookIden::Table)
+                    .table(Book::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(BookIden::Author).integer())
+                    .col(ColumnDef::new(Book::Author).integer().not_null())
                     .col(
-                        ColumnDef::new(BookIden::BookId)
+                        ColumnDef::new(Book::Id)
                             .integer()
                             .not_null()
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(BookIden::Desc).string())
-                    .col(ColumnDef::new(BookIden::IconUrl).string())
-                    .col(ColumnDef::new(BookIden::Pubic).boolean())
-                    .col(ColumnDef::new(BookIden::Published).date_time())
-                    .col(ColumnDef::new(BookIden::Title).string())
+                    .col(ColumnDef::new(Book::Desc).string())
+                    .col(ColumnDef::new(Book::IconUrl).string())
+                    .col(ColumnDef::new(Book::Pubic).boolean().not_null())
+                    .col(ColumnDef::new(Book::Published).date_time())
+                    .col(ColumnDef::new(Book::Title).string().not_null())
                     .foreign_key(&mut book_author)
                     .to_owned(),
             )
@@ -76,14 +76,21 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(ChapterIden::Table)
+                    .table(Chapter::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(ChapterIden::Author).integer())
-                    .col(ColumnDef::new(ChapterIden::Book).integer())
-                    .col(ColumnDef::new(ChapterIden::Pubic).boolean())
-                    .col(ColumnDef::new(ChapterIden::Published).date_time())
-                    .col(ColumnDef::new(ChapterIden::Text).string())
-                    .col(ColumnDef::new(ChapterIden::Title).string())
+                    .col(ColumnDef::new(Chapter::Author).integer().not_null())
+                    .col(ColumnDef::new(Chapter::Book).integer())
+                    .col(ColumnDef::new(Chapter::Pubic).boolean())
+                    .col(ColumnDef::new(Chapter::Published).date_time())
+                    .col(ColumnDef::new(Chapter::Text).string().not_null())
+                    .col(ColumnDef::new(Chapter::Title).string().not_null())
+                    .col(
+                        ColumnDef::new(Chapter::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
                     .foreign_key(&mut chapter_author)
                     .foreign_key(&mut chapter_book)
                     .to_owned(),
@@ -93,34 +100,35 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(Iden, Debug)]
-pub enum UserIden {
+pub enum User {
     Name,
     Pass,
     Email,
-    UserId,
+    Id,
     IconUrl,
     Table,
 }
 
 #[derive(Iden, Debug)]
-pub enum BookIden {
+pub enum Book {
     Title,
     Desc,
     Published,
     Pubic,
-    BookId,
+    Id,
     Author,
     IconUrl,
     Table,
 }
 
 #[derive(Iden, Debug)]
-pub enum ChapterIden {
+pub enum Chapter {
     Title,
     Text,
     Published,
     Pubic,
     Author,
     Book,
+    Id,
     Table,
 }

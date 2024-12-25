@@ -2,6 +2,6 @@
 
 pub mod prelude;
 
-pub mod book_iden;
-pub mod chapter_iden;
-pub mod user_iden;
+pub mod book;
+pub mod chapter;
+pub mod user;

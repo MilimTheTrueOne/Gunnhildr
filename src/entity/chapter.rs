@@ -3,45 +3,47 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "chapter_iden")]
+#[sea_orm(table_name = "chapter")]
 pub struct Model {
-    pub author: Option<i32>,
+    pub author: i32,
     pub book: Option<i32>,
     pub pubic: Option<bool>,
     pub published: Option<DateTime>,
-    pub text: Option<String>,
-    pub title: Option<String>,
+    pub text: String,
+    pub title: String,
+    #[sea_orm(primary_key)]
+    pub id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::book_iden::Entity",
+        belongs_to = "super::book::Entity",
         from = "Column::Book",
-        to = "super::book_iden::Column::BookId",
+        to = "super::book::Column::Id",
         on_update = "Cascade",
         on_delete = "Cascade"
     )]
-    BookIden,
+    Book,
     #[sea_orm(
-        belongs_to = "super::user_iden::Entity",
+        belongs_to = "super::user::Entity",
         from = "Column::Author",
-        to = "super::user_iden::Column::UserId",
+        to = "super::user::Column::Id",
         on_update = "Cascade",
         on_delete = "Cascade"
     )]
-    UserIden,
+    User,
 }
 
-impl Related<super::book_iden::Entity> for Entity {
+impl Related<super::book::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::BookIden.def()
+        Relation::Book.def()
     }
 }
 
-impl Related<super::user_iden::Entity> for Entity {
+impl Related<super::user::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::UserIden.def()
+        Relation::User.def()
     }
 }
 
